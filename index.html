@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
+    <!-- 
+    Chosen Palette: Default Tailwind CSS with semantic colors (Red, Yellow, Green, Gray) for risk levels.
+    Application Structure Plan: A single-page dashboard following the user's 14-point mandatory structure. The layout uses distinct cards for each section, with a sticky header for smooth navigation. Key interactions include filtering the risk matrix and cards, and clicking elements to view details in a modal. This structure was chosen to directly map to the academic requirements provided by the user, ensuring all points are clearly addressed in a logical, sequential flow.
+    Visualization & Content Choices:
+    - Risk Matrix: Interactive Bubble Chart (Chart.js Canvas) with a custom background for risk zones. Interaction: Click on bubbles/cards to open modal; filter by category/level. Justification: Best for visualizing a 5x5 matrix and allowing dynamic filtering. Library: Chart.js.
+    - Ishikawa & Swiss Cheese Diagrams: Diagrams built with structured HTML/CSS (divs with borders and transforms). Interaction: Static visual. Justification: Avoids complex SVG coordinate calculations and rendering issues noted in previous attempts, provides better text handling and responsiveness. Method: HTML/CSS.
+    - Tables & Lists (SWOT, EAP, EAR): Standard semantic HTML styled with Tailwind. Interaction: Static. Justification: Standard, clear, and accessible way to present structured data. Method: HTML/CSS.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise de Riscos: Blockchain em Governos</title>
@@ -8,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://css.gg/css?=|profile" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -110,13 +118,16 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <h1 class="text-xl md:text-2xl font-bold text-slate-800">Blockchain no Setor Público</h1>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="#strategic" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise SWOT</a>
-                    <a href="#overview" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise de Riscos</a>
-                    <a href="#analysis-types" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise Quali/Quanti</a>
-                    <a href="#causal" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise Causal</a>
-                    <a href="#plan" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Plano de Ação</a>
-                    <a href="#conclusion" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Conclusão</a>
+                <nav class="hidden md:flex space-x-4 text-sm">
+                    <a href="#problema" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Problema</a>
+                    <a href="#riscos" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Riscos</a>
+                    <a href="#ishikawa" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Ishikawa</a>
+                    <a href="#analise" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análises</a>
+                    <a href="#viabilidade" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Viabilidade</a>
+                    <a href="#ear" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">EAR</a>
+                    <a href="#plano" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Planos</a>
+                    <a href="#swot" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">SWOT</a>
+                    <a href="#conclusao" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Conclusão</a>
                 </nav>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -125,27 +136,22 @@
         </div>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200"> 
-            <a href="#strategic" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise SWOT</a>
-            <a href="#overview" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise de Riscos</a>
-            <a href="#analysis-types" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise Quali/Quanti</a>
-            <a href="#causal" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise Causal</a>
-            <a href="#plan" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Plano de Ação</a>
-            <a href="#conclusion" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Conclusão</a>
+            <a href="#problema" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">1. Problema</a>
+            <a href="#riscos" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">2. Riscos</a>
+            <a href="#ishikawa" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">3. Ishikawa</a>
+            <a href="#analise" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">4-6. Análises</a>
+            <a href="#viabilidade" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">7-8. Viabilidade e Plano</a>
+            <a href="#ear" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">9. EAR</a>
+            <a href="#plano" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">10-11. EAP e Queijo Suíço</a>
+            <a href="#swot" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">12. SWOT</a>
+            <a href="#conclusao" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">13-14. Conclusão e Ref.</a>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8 md:py-12">
 
-        <!-- Introduction Section -->
-        <section id="intro" class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Análise de Riscos na Implementação de Blockchain em Governos</h2>
-            <p class="max-w-3xl mx-auto text-lg text-slate-600">
-                A tecnologia Blockchain promete transformar a gestão governamental com mais transparência e segurança. Este painel interativo explora os desafios e riscos inerentes a essa implementação, aplicando ferramentas de análise para propor um caminho viável e seguro.
-            </p>
-        </section>
-        
         <!-- Team Members Section -->
-        <section id="integrantes" class="mb-16 scroll-mt-24">
+        <section id="integrantes" class="mb-16">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200 text-center">
                 <h3 class="text-2xl font-bold text-slate-800 mb-4">Integrantes do Grupo</h3>
                 <div class="flex justify-center items-center flex-wrap gap-x-8 gap-y-4 text-slate-700 text-lg mb-6">
@@ -160,30 +166,24 @@
             </div>
         </section>
 
-        <!-- Strategic Analysis Section -->
-        <section id="strategic" class="mb-16 scroll-mt-24">
+        <!-- 1. Levantamento Inicial do Problema -->
+        <section id="problema" class="mb-16 scroll-mt-24">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise Estratégica (SWOT)</h3>
-                <p class="text-slate-600 mb-6">Uma visão estratégica do ambiente interno e externo, avaliando as forças, fraquezas, oportunidades e ameaças do projeto.</p>
-                
-                <div id="swot-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                     <!-- SWOT sections will be injected here -->
-                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">1. Levantamento Inicial do Problema</h3>
+                <p class="text-slate-600">A tecnologia Blockchain, apesar de seu imenso potencial para aumentar a transparência, segurança e eficiência dos serviços públicos, enfrenta uma **adoção lenta e ineficaz no setor governamental**. A complexidade da tecnologia, aliada a barreiras culturais, regulatórias e financeiras, cria um cenário de alto risco que impede o aproveitamento de seus benefícios para a sociedade. Este trabalho se propõe a analisar esses riscos de forma estruturada, a fim de propor um caminho viável para sua implementação.</p>
             </div>
         </section>
-
-        <!-- Risk Overview Section -->
-        <section id="overview" class="mb-16 scroll-mt-24">
+        
+        <!-- 2. Identificação dos Riscos -->
+        <section id="riscos" class="mb-16 scroll-mt-24">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Matriz de Probabilidade e Impacto</h3>
-                <p class="text-slate-600 mb-6">Explore a matriz de riscos de forma interativa. Cada bolha representa um risco, posicionado de acordo com sua probabilidade e impacto. Clique em uma bolha ou em um cartão abaixo para ver mais detalhes.</p>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">2. Identificação dos Riscos (Mapa de Riscos)</h3>
+                <p class="text-slate-600 mb-6">A Matriz de Probabilidade e Impacto é a ferramenta visual central para mapear e priorizar os riscos identificados.</p>
                 
                 <div class="chart-container mx-auto max-w-5xl mb-4">
                     <canvas id="riskMatrixChart"></canvas>
                 </div>
-                <div id="chart-legend" class="flex justify-center items-center flex-wrap gap-x-6 gap-y-2 mb-8 text-sm">
-                    <!-- Legend will be injected here -->
-                </div>
+                <div id="chart-legend" class="flex justify-center items-center flex-wrap gap-x-6 gap-y-2 mb-8 text-sm"></div>
                 
                 <div class="space-y-4">
                     <div id="level-filters" class="flex flex-wrap justify-center gap-2">
@@ -202,57 +202,63 @@
                     </div>
                 </div>
 
-
-                <div id="risk-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                    <!-- Risk cards will be injected here by JavaScript -->
-                </div>
+                <div id="risk-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"></div>
             </div>
         </section>
 
-        <!-- Analysis Types Section -->
-        <section id="analysis-types" class="mb-16 scroll-mt-24">
+        <!-- 3. Diagrama de Ishikawa -->
+        <section id="ishikawa" class="mb-16 scroll-mt-24">
+             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200 overflow-x-auto">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">3. Diagrama de Ishikawa (Espinha de Peixe)</h3>
+                <p class="text-slate-600 mb-6">Esta ferramenta visualiza as potenciais causas-raiz para o problema central da **"Adoção Lenta ou Ineficaz"** da tecnologia.</p>
+                <div id="ishikawa-container"></div>
+            </div>
+        </section>
+
+        <!-- 4, 5, 6. Análises Qualitativa, Categorização e Quantitativa -->
+        <section id="analise" class="mb-16 scroll-mt-24">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise de Riscos: Qualitativa e Quantitativa</h3>
-                <p class="text-slate-600 mb-6">Abaixo, apresentamos as duas abordagens de análise aplicadas aos riscos identificados neste projeto.</p>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">4, 5 e 6. Análises Qualitativa, de Categorização e Quantitativa</h3>
+                <p class="text-slate-600 mb-6">Abaixo, detalhamos as análises dos riscos, que envolvem sua priorização qualitativa, o agrupamento por categorias e uma simulação de seu impacto financeiro.</p>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
-                        <h4 class="text-xl font-bold text-sky-800 mb-3 border-b-2 border-sky-200 pb-2">Análise Qualitativa: Priorização</h4>
-                        <p class="text-slate-600 mb-4">Esta análise classifica os riscos em níveis (Extremo, Elevado, etc.) para definir prioridades de ação. Riscos com maior probabilidade e impacto recebem atenção imediata.</p>
+                        <h4 class="text-xl font-bold text-sky-800 mb-3 border-b-2 border-sky-200 pb-2">Análise Qualitativa e Categorização</h4>
+                        <p class="text-slate-600 mb-4">Os riscos são classificados por níveis (Extremo, Elevado) e agrupados em categorias (ex: Técnicos) para definir prioridades de ação.</p>
                         <table class="w-full text-left">
                            <thead>
                                 <tr class="bg-sky-50 text-sky-900">
                                     <th class="p-2 rounded-tl-lg">Risco Prioritário</th>
                                     <th class="p-2">Nível</th>
-                                    <th class="p-2 rounded-tr-lg">Justificativa</th>
+                                    <th class="p-2 rounded-tr-lg">Categoria</th>
                                 </tr>
                            </thead>
                            <tbody>
                                 <tr class="border-b border-sky-100">
                                     <td class="p-2 font-medium">Segurança</td>
                                     <td class="p-2"><span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Extremo</span></td>
-                                    <td class="p-2 text-sm">Impacto catastrófico em dados e confiança.</td>
+                                    <td class="p-2 text-sm">Técnico</td>
                                 </tr>
                                 <tr class="border-b border-sky-100">
                                     <td class="p-2 font-medium">Regulamentação</td>
                                     <td class="p-2"><span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Extremo</span></td>
-                                    <td class="p-2 text-sm">Pode paralisar ou invalidar o projeto.</td>
+                                    <td class="p-2 text-sm">Legal/Regulatório</td>
                                 </tr>
                                  <tr class="border-b border-sky-100">
                                     <td class="p-2 font-medium">Custo</td>
                                     <td class="p-2"><span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Elevado</span></td>
-                                    <td class="p-2 text-sm">Alto investimento inicial e operacional.</td>
+                                    <td class="p-2 text-sm">Financeiro</td>
                                 </tr>
                                 <tr>
                                     <td class="p-2 font-medium">Capacitação</td>
                                     <td class="p-2"><span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Elevado</span></td>
-                                    <td class="p-2 text-sm">Escassez de talentos impacta a execução.</td>
+                                    <td class="p-2 text-sm">Organizacional/Humano</td>
                                 </tr>
                            </tbody>
                         </table>
                     </div>
                      <div>
-                        <h4 class="text-xl font-bold text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-2">Análise Quantitativa: Simulação</h4>
-                        <p class="text-slate-600 mb-4">Esta análise atribui valores financeiros aos riscos para calcular o impacto monetário. A "Perda Anual Esperada" (ALE) ajuda a justificar investimentos em mitigação.</p>
+                        <h4 class="text-xl font-bold text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-2">Análise Quantitativa</h4>
+                        <p class="text-slate-600 mb-4">Atribui valores financeiros aos riscos para calcular o impacto monetário. A "Perda Anual Esperada" (ALE) ajuda a justificar investimentos em mitigação.</p>
                         <table class="w-full text-left">
                            <thead>
                                 <tr class="bg-emerald-50 text-emerald-900">
@@ -288,53 +294,87 @@
             </div>
         </section>
 
-        <!-- Causal Analysis Section -->
-        <section id="causal" class="mb-16 scroll-mt-24">
-             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200 overflow-x-auto">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise Causal (Ishikawa)</h3>
-                <p class="text-slate-600 mb-6">O Diagrama de Ishikawa, ou Espinha de Peixe, ajuda a visualizar as potenciais causas de um problema complexo, agrupando-as em categorias para facilitar a análise.</p>
-                
-                <div id="ishikawa-container">
-                    <!-- Ishikawa SVG diagram will be injected here -->
+        <!-- 7 & 8. Análise de Viabilidade e Plano de Gerenciamento -->
+        <section id="viabilidade" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">7 e 8. Análise de Viabilidade e Plano de Gerenciamento</h3>
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-xl font-bold text-slate-700 mb-2">Análise de Viabilidade</h4>
+                        <p class="text-slate-600">A implementação é considerada viável, desde que siga uma abordagem faseada (EAP) e que os investimentos em mitigação sejam justificados pela Análise Quantitativa. O custo de mitigar o risco de segurança (ex: R$ 100 mil/ano) é menor que a perda anual esperada (R$ 250 mil/ano), indicando um ROI positivo na gestão do risco.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-slate-700 mb-2">Plano de Gerenciamento de Riscos</h4>
+                        <p class="text-slate-600 mb-4">O plano define ações, responsáveis e status para os riscos prioritários. A aprovação será realizada pelo comitê gestor do projeto.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-slate-50">
+                                        <th class="p-2 rounded-tl-lg">Risco</th>
+                                        <th class="p-2">Ação de Mitigação</th>
+                                        <th class="p-2">Responsável</th>
+                                        <th class="p-2 rounded-tr-lg">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b"><td class="p-2 font-medium">Segurança</td><td class="p-2">Contratar auditoria de Smart Contracts</td><td class="p-2">Equipe de TI</td><td class="p-2">Em andamento</td></tr>
+                                    <tr class="border-b"><td class="p-2 font-medium">Regulamentação</td><td class="p-2">Criar grupo de trabalho com setor jurídico</td><td class="p-2">Jurídico</td><td class="p-2">Planejado</td></tr>
+                                    <tr><td class="p-2 font-medium">Custo</td><td class="p-2">Buscar parcerias e financiamento</td><td class="p-2">Gestão</td><td class="p-2">Iniciado</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Action Plan Section -->
-        <section id="plan" class="mb-16 scroll-mt-24">
+        <!-- 9. EAR -->
+        <section id="ear" class="mb-16 scroll-mt-24">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Plano de Ação e Defesa</h3>
-                 <p class="text-slate-600 mb-6">Visualize as camadas de defesa e as fases do projeto propostas para mitigar os riscos e garantir uma implementação bem-sucedida.</p>
-                
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">9. EAR – Estrutura Analítica de Riscos</h3>
+                <p class="text-slate-600 mb-4">A EAR organiza os riscos identificados em uma estrutura hierárquica, partindo de categorias gerais para riscos específicos.</p>
+                <div id="ear-container" class="space-y-3"></div>
+            </div>
+        </section>
+        
+        <!-- 10 & 11. EAP e Modelo Queijo Suíço -->
+        <section id="plano" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">10 e 11. EAP e Modelo Queijo Suíço</h3>
+                 <p class="text-slate-600 mb-6">Ferramentas visuais para o plano de implementação e as camadas de defesa do projeto.</p>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <!-- Swiss Cheese Model -->
                     <div class="overflow-x-auto">
                         <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">Modelo Queijo Suíço</h4>
-                        <div id="swiss-cheese-container">
-                            <!-- Swiss cheese layers will be injected here -->
-                        </div>
+                        <div id="swiss-cheese-container"></div>
                     </div>
-                    <!-- EAP / Timeline -->
                     <div>
                         <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">Estrutura Analítica do Projeto (EAP)</h4>
-                        <div id="eap-container" class="relative border-l-2 border-blue-200 pl-6 space-y-8">
-                           <!-- EAP/Timeline items will be injected here -->
-                        </div>
+                        <div id="eap-container" class="relative border-l-2 border-blue-200 pl-6 space-y-8"></div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Conclusion Section -->
-        <section id="conclusion" class="scroll-mt-24">
+        
+        <!-- 12. Matriz SWOT -->
+        <section id="swot" class="mb-16 scroll-mt-24">
              <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">Conclusão e Recomendações</h3>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">12. Matriz SWOT</h3>
+                <p class="text-slate-600 mb-6">Análise de Forças, Fraquezas, Oportunidades e Ameaças relacionadas ao projeto.</p>
+                <div id="swot-container-main" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"></div>
+            </div>
+        </section>
+
+        <!-- 13 & 14. Conclusão e Referências -->
+        <section id="conclusao" class="scroll-mt-24">
+             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">13. Conclusão e Recomendações</h3>
                 <p class="text-slate-600 mb-4">
                     A implementação de Blockchain em governos é um projeto de alto potencial, mas cercado de riscos complexos. A análise detalhada mostra que a viabilidade depende de uma gestão de riscos proativa e um plano de mitigação robusto. A proatividade na gestão de riscos é o que transformará a promessa da Blockchain em uma realidade de valor para os cidadãos.
                 </p>
-                <ul id="recommendations-list" class="space-y-3">
-                    <!-- Recommendations will be injected here -->
-                </ul>
+                <ul id="recommendations-list" class="space-y-3"></ul>
+                <hr class="my-8">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">14. Referências</h3>
+                <div id="references-container" class="text-sm text-slate-600 space-y-2"></div>
             </div>
         </section>
     </main>
@@ -353,7 +393,7 @@
     </div>
 
     <footer class="text-center py-6 mt-12 border-t border-slate-200">
-        <p class="text-slate-500">Blockchain no Setor Público</p>
+        <p class="text-slate-500">Relatório Interativo de Análise de Riscos | Grupo 6</p>
     </footer>
 
 
@@ -425,6 +465,12 @@
             'Investir massivamente em capacitação de pessoal e conscientização.',
             'Estabelecer mecanismos de monitoramento contínuo dos riscos.'
         ];
+        
+        const referencesData = [
+            'Project Management Institute. (2017). *A Guide to the Project Management Body of Knowledge (PMBOK® Guide)* (6th ed.).',
+            'Swan, M. (2015). *Blockchain: Blueprint for a New Economy*. O\'Reilly Media.',
+            'ISO 31000:2018 - Risk management — Guidelines.'
+        ];
 
         let riskMatrixChart; // Global chart instance
         let currentCategoryFilter = 'all';
@@ -439,7 +485,9 @@
             renderSwot();
             renderSwissCheese();
             renderEAP();
+            renderEAR();
             renderRecommendations();
+            renderReferences();
             setupFilters();
             setupModal();
             applyFilters(); // Initial render of cards
@@ -692,7 +740,8 @@
         }
 
         function renderSwot() {
-            const container = document.getElementById('swot-container');
+            const container = document.getElementById('swot-container-main');
+            if (!container) return; // Defensive check
             const colors = {
                 'Forças': 'bg-teal-50 border-teal-200',
                 'Fraquezas': 'bg-amber-50 border-amber-200',
@@ -766,6 +815,23 @@
             `).join('');
         }
         
+        function renderEAR() {
+            const container = document.getElementById('ear-container');
+            let earHtml = '<ul class="space-y-2">';
+            const categories = [...new Set(riskData.map(r => r.category))];
+            
+            categories.forEach(category => {
+                earHtml += `<li class="font-semibold text-slate-700">${category}
+                    <ul class="pl-4 font-normal text-slate-600 space-y-1 mt-1">`;
+                riskData.filter(r => r.category === category).forEach(risk => {
+                    earHtml += `<li>- ${risk.name}</li>`;
+                });
+                earHtml += `</ul></li>`;
+            });
+            earHtml += '</ul>';
+            container.innerHTML = earHtml;
+        }
+        
         function renderRecommendations() {
             const container = document.getElementById('recommendations-list');
              container.innerHTML = recommendationsData.map(item => `
@@ -774,6 +840,11 @@
                     <span>${item}</span>
                 </li>
             `).join('');
+        }
+
+        function renderReferences() {
+            const container = document.getElementById('references-container');
+            container.innerHTML = referencesData.map(item => `<p>${item}</p>`).join('');
         }
 
         // --- INTERACTIVITY ---
