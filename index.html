@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Riscos: Blockchain em Governos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css.gg/css?=|profile" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            max-height: 500px;
+        }
+        /* SVG Ishikawa Diagram Styles */
+        .ishikawa-svg {
+            width: 100%;
+            height: auto;
+            font-family: 'Inter', sans-serif;
+            min-width: 1250px; /* Ensures the diagram has enough space */
+        }
+        .ishikawa-svg .spine {
+            stroke: #3b82f6; /* blue-500 */
+            stroke-width: 4;
+            marker-end: url(#arrowhead);
+        }
+        .ishikawa-svg .bone {
+            stroke: #3b82f6; /* blue-500 */
+            stroke-width: 3;
+        }
+        .ishikawa-svg .head-box {
+            fill: #3b82f6; /* blue-500 */
+        }
+        .ishikawa-svg .head-text {
+            fill: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-anchor: middle;
+        }
+        .ishikawa-svg .tail {
+            fill: #93c5fd; /* blue-300 */
+            stroke: #3b82f6;
+            stroke-width: 2.5;
+        }
+        .ishikawa-svg .category-box {
+            fill: white;
+            stroke: #1f2937; /* gray-800 */
+            stroke-width: 2px;
+            rx: 8;
+        }
+        .ishikawa-svg .category-text {
+            fill: #1f2937; /* gray-800 */
+            font-size: 16px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+        .ishikawa-svg .cause-text {
+            fill: #475569; /* slate-600 */
+            font-size: 14px;
+        }
+        .ishikawa-svg .cause-line {
+            stroke: #9ca3af; /* gray-400 */
+            stroke-width: 2;
+        }
+         /* Swiss Cheese Model Styles */
+        .swiss-cheese-svg {
+            width: 100%;
+            height: auto;
+            min-width: 1300px;
+        }
+        .swiss-cheese-svg .cheese-slice {
+            fill: #fcd34d; /* amber-300 */
+            stroke: #f59e0b; /* amber-500 */
+            stroke-width: 2;
+        }
+        .swiss-cheese-svg .cheese-hole {
+            fill: #f8fafc; /* slate-50 */
+        }
+        .swiss-cheese-svg .arrow-line {
+            stroke: #ef4444; /* red-500 */
+            stroke-width: 4;
+            marker-end: url(#riskArrow);
+            stroke-dasharray: 8 4;
+        }
+        .swiss-cheese-svg .arrow-text {
+            fill: #b91c1c; /* red-700 */
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        .swiss-cheese-svg .layer-text {
+            font-weight: 500;
+            text-anchor: middle;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-slate-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-xl md:text-2xl font-bold text-slate-800">Blockchain no Setor Público</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#strategic" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise SWOT</a>
+                    <a href="#overview" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise de Riscos</a>
+                    <a href="#analysis-types" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise Quali/Quanti</a>
+                    <a href="#causal" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Análise Causal</a>
+                    <a href="#plan" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Plano de Ação</a>
+                    <a href="#conclusion" class="font-medium text-slate-600 hover:text-blue-600 transition-colors">Conclusão</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200"> 
+            <a href="#strategic" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise SWOT</a>
+            <a href="#overview" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise de Riscos</a>
+            <a href="#analysis-types" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise Quali/Quanti</a>
+            <a href="#causal" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Análise Causal</a>
+            <a href="#plan" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Plano de Ação</a>
+            <a href="#conclusion" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">Conclusão</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <!-- Introduction Section -->
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Análise de Riscos na Implementação de Blockchain em Governos</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                A tecnologia Blockchain promete transformar a gestão governamental com mais transparência e segurança. Este painel interativo explora os desafios e riscos inerentes a essa implementação, aplicando ferramentas de análise para propor um caminho viável e seguro.
+            </p>
+        </section>
+        
+        <!-- Team Members Section -->
+        <section id="integrantes" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200 text-center">
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">Integrantes do Grupo 6</h3>
+                <div class="flex justify-center items-center flex-wrap gap-x-8 gap-y-4 text-slate-700 text-lg mb-6">
+                    <span class="font-medium">Pedro Paiva</span>
+                    <span class="font-medium">Igor Landim</span>
+                    <span class="font-medium">Lucas Cintra</span>
+                    <span class="font-medium">João Hugo</span>
+                    <span class="font-medium">Bernardo Ladeira</span>
+                </div>
+                <p class="text-slate-500 mt-4 text-sm">Disciplina de Análise de Riscos</p>
+            </div>
+        </section>
+
+        <!-- Strategic Analysis Section -->
+        <section id="strategic" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise Estratégica (SWOT)</h3>
+                <p class="text-slate-600 mb-6">Uma visão estratégica do ambiente interno e externo, avaliando as forças, fraquezas, oportunidades e ameaças do projeto.</p>
+                
+                <div id="swot-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                     <!-- SWOT sections will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Risk Overview Section -->
+        <section id="overview" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Matriz de Probabilidade e Impacto</h3>
+                <p class="text-slate-600 mb-6">Explore a matriz de riscos de forma interativa. Cada bolha representa um risco, posicionado de acordo com sua probabilidade e impacto. Clique em uma bolha ou em um cartão abaixo para ver mais detalhes.</p>
+                
+                <div class="chart-container mx-auto max-w-5xl mb-4">
+                    <canvas id="riskMatrixChart"></canvas>
+                </div>
+                <div id="chart-legend" class="flex justify-center items-center flex-wrap gap-x-6 gap-y-2 mb-8 text-sm">
+                    <!-- Legend will be injected here -->
+                </div>
+                
+                <div class="space-y-4">
+                    <div id="level-filters" class="flex flex-wrap justify-center gap-2">
+                         <button class="level-filter-btn bg-blue-500 text-white py-2 px-4 rounded-full" data-level-filter="all">Todos os Níveis</button>
+                         <button class="level-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-level-filter="Baixo">Baixo</button>
+                         <button class="level-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-level-filter="Moderado">Moderado</button>
+                         <button class="level-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-level-filter="Elevado">Elevado</button>
+                         <button class="level-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-level-filter="Extremo">Extremo</button>
+                    </div>
+                    <div id="category-filters" class="flex flex-wrap justify-center gap-2">
+                        <button class="category-filter-btn bg-blue-500 text-white py-2 px-4 rounded-full" data-category-filter="all">Todas as Categorias</button>
+                        <button class="category-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-category-filter="Técnicos">Técnicos</button>
+                        <button class="category-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-category-filter="Organizacionais/Humanos">Organizacionais</button>
+                        <button class="category-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-category-filter="Legais/Regulatórios">Legais</button>
+                        <button class="category-filter-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-full" data-category-filter="Financeiros">Financeiros</button>
+                    </div>
+                </div>
+
+
+                <div id="risk-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                    <!-- Risk cards will be injected here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Types Section -->
+        <section id="analysis-types" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise de Riscos: Qualitativa e Quantitativa</h3>
+                <p class="text-slate-600 mb-6">Abaixo, apresentamos as duas abordagens de análise aplicadas aos riscos identificados neste projeto.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-sky-800 mb-3 border-b-2 border-sky-200 pb-2">Análise Qualitativa: Priorização</h4>
+                        <p class="text-slate-600 mb-4">Esta análise classifica os riscos em níveis (Extremo, Elevado, etc.) para definir prioridades de ação. Riscos com maior probabilidade e impacto recebem atenção imediata.</p>
+                        <table class="w-full text-left">
+                           <thead>
+                                <tr class="bg-sky-50 text-sky-900">
+                                    <th class="p-2 rounded-tl-lg">Risco Prioritário</th>
+                                    <th class="p-2">Nível</th>
+                                    <th class="p-2 rounded-tr-lg">Justificativa</th>
+                                </tr>
+                           </thead>
+                           <tbody>
+                                <tr class="border-b border-sky-100">
+                                    <td class="p-2 font-medium">Segurança</td>
+                                    <td class="p-2"><span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Extremo</span></td>
+                                    <td class="p-2 text-sm">Impacto catastrófico em dados e confiança.</td>
+                                </tr>
+                                <tr class="border-b border-sky-100">
+                                    <td class="p-2 font-medium">Regulamentação</td>
+                                    <td class="p-2"><span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Extremo</span></td>
+                                    <td class="p-2 text-sm">Pode paralisar ou invalidar o projeto.</td>
+                                </tr>
+                                 <tr class="border-b border-sky-100">
+                                    <td class="p-2 font-medium">Custo</td>
+                                    <td class="p-2"><span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Elevado</span></td>
+                                    <td class="p-2 text-sm">Alto investimento inicial e operacional.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-medium">Capacitação</td>
+                                    <td class="p-2"><span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Elevado</span></td>
+                                    <td class="p-2 text-sm">Escassez de talentos impacta a execução.</td>
+                                </tr>
+                           </tbody>
+                        </table>
+                    </div>
+                     <div>
+                        <h4 class="text-xl font-bold text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-2">Análise Quantitativa: Simulação</h4>
+                        <p class="text-slate-600 mb-4">Esta análise atribui valores financeiros aos riscos para calcular o impacto monetário. A "Perda Anual Esperada" (ALE) ajuda a justificar investimentos em mitigação.</p>
+                        <table class="w-full text-left">
+                           <thead>
+                                <tr class="bg-emerald-50 text-emerald-900">
+                                    <th class="p-2 rounded-tl-lg">Risco</th>
+                                    <th class="p-2">Custo Potencial</th>
+                                    <th class="p-2">Prob. Anual</th>
+                                    <th class="p-2 rounded-tr-lg">ALE</th>
+                                </tr>
+                           </thead>
+                           <tbody>
+                                <tr class="border-b border-emerald-100">
+                                    <td class="p-2 font-medium">Segurança</td>
+                                    <td class="p-2">R$ 5.000.000</td>
+                                    <td class="p-2">5%</td>
+                                    <td class="p-2 font-semibold">R$ 250.000</td>
+                                </tr>
+                                 <tr class="border-b border-emerald-100">
+                                    <td class="p-2 font-medium">Interoperabilidade</td>
+                                    <td class="p-2">R$ 1.200.000</td>
+                                    <td class="p-2">10%</td>
+                                    <td class="p-2 font-semibold">R$ 120.000</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-medium">Privacidade (LGPD)</td>
+                                    <td class="p-2">R$ 2.000.000</td>
+                                    <td class="p-2">3%</td>
+                                    <td class="p-2 font-semibold">R$ 60.000</td>
+                                </tr>
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Causal Analysis Section -->
+        <section id="causal" class="mb-16 scroll-mt-24">
+             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200 overflow-x-auto">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Análise Causal (Ishikawa)</h3>
+                <p class="text-slate-600 mb-6">O Diagrama de Ishikawa, ou Espinha de Peixe, ajuda a visualizar as potenciais causas de um problema complexo, agrupando-as em categorias para facilitar a análise.</p>
+                
+                <div id="ishikawa-container">
+                    <!-- Ishikawa SVG diagram will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Plan Section -->
+        <section id="plan" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Plano de Ação e Defesa</h3>
+                 <p class="text-slate-600 mb-6">Visualize as camadas de defesa e as fases do projeto propostas para mitigar os riscos e garantir uma implementação bem-sucedida.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Swiss Cheese Model -->
+                    <div class="overflow-x-auto">
+                        <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">Modelo Queijo Suíço</h4>
+                        <div id="swiss-cheese-container">
+                            <!-- Swiss cheese layers will be injected here -->
+                        </div>
+                    </div>
+                    <!-- EAP / Timeline -->
+                    <div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">Estrutura Analítica do Projeto (EAP)</h4>
+                        <div id="eap-container" class="relative border-l-2 border-blue-200 pl-6 space-y-8">
+                           <!-- EAP/Timeline items will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion Section -->
+        <section id="conclusion" class="scroll-mt-24">
+             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Conclusão e Recomendações</h3>
+                <p class="text-slate-600 mb-4">
+                    A implementação de Blockchain em governos é um projeto de alto potencial, mas cercado de riscos complexos. A análise detalhada mostra que a viabilidade depende de uma gestão de riscos proativa e um plano de mitigação robusto. A proatividade na gestão de riscos é o que transformará a promessa da Blockchain em uma realidade de valor para os cidadãos.
+                </p>
+                <ul id="recommendations-list" class="space-y-3">
+                    <!-- Recommendations will be injected here -->
+                </ul>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal -->
+    <div id="riskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 md:p-8">
+                 <div class="flex justify-between items-start">
+                    <h4 id="modalTitle" class="text-2xl font-bold text-slate-800 mb-4"></h4>
+                    <button id="closeModal" class="p-1 -mt-2 -mr-2 text-slate-400 hover:text-slate-800">&times;</button>
+                </div>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-6 mt-12 border-t border-slate-200">
+        <p class="text-slate-500">Blockchain no Setor Público</p>
+    </footer>
+
+
+    <script>
+        // --- DATA ---
+        // Probabilidade Scale: 1(Raro), 2(Baixa), 3(Média), 4(Alta), 5(Quase certo)
+        // Impacto Scale: 1(Sem Impacto), 2(Leve), 3(Médio), 4(Grave), 5(Gravíssimo)
+        const riskData = [
+            // Risco Extremo
+            { id: 5, name: 'Regulamentação', prob: 5, impact: 4, category: 'Legais/Regulatórios', desc: 'Lacunas legais, ambiguidade jurídica, lentidão na criação de marcos regulatórios específicos.' },
+            { id: 1, name: 'Segurança', prob: 4, impact: 5, category: 'Técnicos', desc: 'Vulnerabilidades em contratos inteligentes, ataques cibernéticos a redes distribuídas, falhas na criptografia.' },
+            { id: 2, name: 'Privacidade', prob: 3, impact: 4, category: 'Legais/Regulatórios', desc: 'Gestão de dados sensíveis em redes transparentes, conformidade com regulamentações como a LGPD.' },
+            
+            // Risco Elevado
+            { id: 4, name: 'Falta de Infraestrutura', prob: 3, impact: 3, category: 'Técnicos', desc: 'Ausência de hardware e software adequados, largura de banda insuficiente.' },
+            { id: 8, name: 'Custo de Implementação', prob: 4, impact: 3, category: 'Financeiros', desc: 'Elevado investimento inicial e custos contínuos de operação.' },
+            { id: 10, name: 'Resistência à Mudança', prob: 4, impact: 2, category: 'Organizacionais/Humanos', desc: 'Resistência à mudança por parte de funcionários públicos e órgãos tradicionais.' },
+            { id: 6, name: 'Interoperabilidade', prob: 1, impact: 5, category: 'Técnicos', desc: 'Dificuldade de integrar sistemas blockchain com sistemas legados existentes.' },
+            { id: 9, name: 'Falta de Capacitação', prob: 5, impact: 2, category: 'Organizacionais/Humanos', desc: 'Carência de profissionais qualificados no setor público.' },
+            
+            // Risco Moderado
+            { id: 3, name: 'Aceitação Institucional', prob: 3, impact: 2, category: 'Organizacionais/Humanos', desc: 'Falta de compreensão da tecnologia e seus benefícios, gerando baixa adesão.' },
+            { id: 7, name: 'Escalabilidade', prob: 2, impact: 3, category: 'Técnicos', desc: 'Capacidade da rede de processar um grande volume de transações em tempo real.' },
+            
+            // Risco Baixo
+            { id: 11, name: 'Erro Humano Operacional', prob: 2, impact: 2, category: 'Organizacionais/Humanos', desc: 'Falhas pontuais de operadores no uso do sistema, sem impacto sistêmico.' },
+        ];
+
+
+        const ishikawaData = {
+            problem: 'Adoção Lenta ou Ineficaz',
+            categories: [
+                { name: 'Mão de Obra', causes: ['Capacitação', 'Cultura', 'Insegurança'] },
+                { name: 'Máquinas (Tecnologia)', causes: ['Complexidade', 'Integração', 'Vulnerabilidades'] },
+                { name: 'Materiais (Recursos)', causes: ['Custo', 'Infraestrutura', 'Equipe'] },
+                { name: 'Métodos (Processos)', causes: ['Estratégia', 'Casos de Uso', 'Comunicação'] },
+                { name: 'Medição (Governança & Reg.)', causes: ['Regulação', 'Privacidade', 'Padrões'] },
+                { name: 'Meio Ambiente (Externo)', causes: ['Burocracia', 'Apoio Político', 'Percepção Pública'] }
+            ]
+        };
+
+        const swotData = {
+            'Forças': ['Transparência e imutabilidade', 'Segurança criptográfica', 'Potencial para alta eficiência', 'Redução de intermediários'],
+            'Fraquezas': ['Complexidade tecnológica', 'Alto custo inicial', 'Problemas de escalabilidade', 'Falta de padronização'],
+            'Oportunidades': ['Combate à corrupção', 'Otimização de serviços públicos', 'Estímulo à inovação', 'Colaboração internacional'],
+            'Ameaças': ['Ciberataques sofisticados', 'Resistência à mudança', 'Lacunas regulatórias', 'Concorrência de outras tecnologias']
+        };
+
+        const swissCheeseData = [
+            { name: 'Legislação Clara' },
+            { name: 'Arquitetura Segura' },
+            { name: 'Governança de Rede' },
+            { name: 'Auditorias Contínuas' },
+            { name: 'Capacitação Pessoal' },
+            { name: 'Resposta a Incidentes' }
+        ];
+
+        const eapData = [
+            { phase: 'Fase 1: Planejamento (Mês 1-3)', items: ['Levantamento de Requisitos', 'Estudo de Viabilidade', 'Análise de Riscos Detalhada'] },
+            { phase: 'Fase 2: Legislação (Mês 4-12)', items: ['Criação de Grupo de Trabalho', 'Proposta de Legislação', 'Desenvolvimento de Normas'] },
+            { phase: 'Fase 3: Piloto (Mês 13-24)', items: ['Seleção do Caso de Uso', 'Desenvolvimento da Plataforma', 'Testes e Capacitação'] },
+            { phase: 'Fase 4: Expansão (Mês 25+)', items: ['Avaliação do Piloto', 'Expansão para Outras Áreas', 'Monitoramento Contínuo'] }
+        ];
+
+        const recommendationsData = [
+            'Adotar uma abordagem faseada (pilotos, expansão gradual).',
+            'Fomentar parcerias público-privadas para alavancar expertise e recursos.',
+            'Priorizar o desenvolvimento de um marco legal e regulatório claro.',
+            'Investir massivamente em capacitação de pessoal e conscientização.',
+            'Estabelecer mecanismos de monitoramento contínuo dos riscos.'
+        ];
+
+        let riskMatrixChart; // Global chart instance
+        let currentCategoryFilter = 'all';
+        let currentLevelFilter = 'all';
+
+        // --- UI INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setupMobileMenu();
+            renderRiskMatrixChart(riskData);
+            renderChartLegend();
+            renderIshikawaDiagram();
+            renderSwot();
+            renderSwissCheese();
+            renderEAP();
+            renderRecommendations();
+            setupFilters();
+            setupModal();
+            applyFilters(); // Initial render of cards
+        });
+
+        function setupMobileMenu() {
+            const button = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+            button.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+            menu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menu.classList.add('hidden');
+                });
+            });
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function getRiskLevel(prob, impact) {
+            if ((prob === 5 && impact >= 3) || (prob >= 3 && impact >= 4) || (prob === 2 && impact === 5)) return 'Extremo';
+            if ((prob === 5 && impact === 2) || (prob === 4 && impact >= 2 && impact <= 3) || (prob === 3 && impact === 3) || (prob <= 2 && impact === 4) || (prob === 1 && impact === 5)) return 'Elevado';
+            if ((prob === 4 && impact === 1) || (prob === 3 && impact === 2) || (prob === 2 && impact === 3) || (prob === 1 && impact === 3)) return 'Moderado';
+            return 'Baixo';
+        }
+
+        function renderRiskCards(data) {
+            const container = document.getElementById('risk-cards-container');
+            container.innerHTML = '';
+            if (data.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 col-span-full text-center">Nenhum risco corresponde aos filtros selecionados.</p>`;
+                return;
+            }
+            data.forEach(risk => {
+                const card = document.createElement('div');
+                card.className = `risk-card bg-slate-50 border border-slate-200 p-4 rounded-lg cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all`;
+                card.dataset.category = risk.category;
+                card.dataset.riskId = risk.id;
+                
+                const level = getRiskLevel(risk.prob, risk.impact);
+                let borderColor = 'border-t-yellow-400'; // Elevado
+                if (level === 'Extremo') borderColor = 'border-t-red-500';
+                else if (level === 'Moderado') borderColor = 'border-t-green-500';
+                else if (level === 'Baixo') borderColor = 'border-t-gray-400';
+
+                card.innerHTML = `
+                    <div class="border-t-4 ${borderColor} -mt-4 -mx-4 mb-4 rounded-t"></div>
+                    <h5 class="font-bold text-slate-800">${risk.name}</h5>
+                    <p class="text-sm text-slate-500">${risk.category}</p>
+                `;
+                container.appendChild(card);
+            });
+            setupCardClicks();
+        }
+        
+        const riskMatrixBackground = {
+            id: 'riskMatrixBackground',
+            beforeDatasetsDraw(chart, args, options) {
+                const { ctx, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+                ctx.save();
+
+                const colors = {
+                    'Baixo': 'rgba(209, 213, 219, 0.2)', // gray-300
+                    'Moderado': 'rgba(74, 222, 128, 0.2)', // green-400
+                    'Elevado': 'rgba(250, 204, 21, 0.2)',  // yellow-400
+                    'Extremo': 'rgba(239, 68, 68, 0.2)',   // red-500
+                };
+                
+                const xCoords = [left, x.getPixelForValue(1.5), x.getPixelForValue(2.5), x.getPixelForValue(3.5), x.getPixelForValue(4.5), right];
+                const yCoords = [bottom, y.getPixelForValue(1.5), y.getPixelForValue(2.5), y.getPixelForValue(3.5), y.getPixelForValue(4.5), top];
+
+                for (let i = 1; i <= 5; i++) { // Impact (x-axis)
+                    for (let j = 1; j <= 5; j++) { // Probability (y-axis)
+                        const level = getRiskLevel(j, i);
+                        ctx.fillStyle = colors[level];
+                        const xStart = xCoords[i-1];
+                        const yStart = yCoords[j];
+                        const xWidth = xCoords[i] - xCoords[i-1];
+                        const yHeight = yCoords[j-1] - yCoords[j];
+                        ctx.fillRect(xStart, yStart, xWidth, yHeight);
+                    }
+                }
+                ctx.restore();
+            }
+        };
+        
+        function mapDataForChart(data) {
+            return data.map(risk => {
+                const level = getRiskLevel(risk.prob, risk.impact);
+                let bgColor, bdColor;
+                
+                if (level === 'Extremo') {
+                    bgColor = 'rgba(239, 68, 68, 0.8)'; bdColor = 'rgb(185, 28, 28)';
+                } else if (level === 'Elevado') {
+                    bgColor = 'rgba(250, 204, 21, 0.9)'; bdColor = 'rgb(217, 119, 6)';
+                } else if (level === 'Moderado') {
+                    bgColor = 'rgba(74, 222, 128, 0.9)'; bdColor = 'rgb(22, 163, 74)';
+                } else { // Baixo
+                    bgColor = 'rgba(156, 163, 175, 0.9)'; bdColor = 'rgb(107, 114, 128)';
+                }
+
+                return {
+                    x: risk.impact,
+                    y: risk.prob,
+                    r: 12, // bubble radius
+                    label: risk.name,
+                    id: risk.id,
+                    backgroundColor: bgColor,
+                    borderColor: bdColor,
+                    category: risk.category
+                };
+            });
+        }
+
+        function renderRiskMatrixChart(data) {
+            const ctx = document.getElementById('riskMatrixChart').getContext('2d');
+            const chartData = mapDataForChart(data);
+
+            riskMatrixChart = new Chart(ctx, {
+                type: 'bubble',
+                plugins: [riskMatrixBackground],
+                data: {
+                    datasets: [{
+                        label: 'Riscos',
+                        data: chartData,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: 10 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return context.raw.label; }
+                            }
+                        },
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Impacto', font: { weight: 'bold'} },
+                            min: 0.5, max: 5.5,
+                            grid: { drawOnChartArea: true, color: 'rgba(0,0,0,0.05)' },
+                            ticks: { stepSize: 1, callback: val => ['','Sem Impacto','Leve','Médio','Grave', 'Gravíssimo'][val] || '' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Probabilidade', font: { weight: 'bold'} },
+                            min: 0.5, max: 5.5,
+                            grid: { drawOnChartArea: true, color: 'rgba(0,0,0,0.05)' },
+                            ticks: { stepSize: 1, callback: val => ['','Raro','Baixa','Média','Alta', 'Quase Certo'][val] || '' }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const riskId = elements[0].element.$context.raw.id;
+                            showModalForRisk(riskId);
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderChartLegend() {
+            const legendContainer = document.getElementById('chart-legend');
+            const legendData = [
+                { label: 'Risco Extremo', color: 'bg-red-500' },
+                { label: 'Risco Elevado', color: 'bg-yellow-400' },
+                { label: 'Risco Moderado', color: 'bg-green-500' },
+                { label: 'Risco Baixo', color: 'bg-gray-400' },
+            ];
+            
+            legendContainer.innerHTML = legendData.map(item => `
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded-full mr-2 ${item.color}"></span>
+                    <span>${item.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderIshikawaDiagram() {
+            const container = document.getElementById('ishikawa-container');
+            const { problem, categories } = ishikawaData;
+
+            let bonesHtml = '';
+
+            categories.forEach((cat, index) => {
+                const isTop = index < 3;
+                const xBase = 250 + (index % 3) * 320;
+                const boneAngle = isTop ? -55 : 55;
+                const boneLength = 180;
+                
+                const endX = xBase - boneLength * Math.cos(boneAngle * Math.PI / 180);
+                const endY = 300 + boneLength * Math.sin(boneAngle * Math.PI / 180);
+
+                let causesHtml = '';
+                cat.causes.forEach((cause, j) => {
+                    const causeStartRatio = 0.3 + j * 0.25;
+                    const causeStartX = xBase + (endX - xBase) * causeStartRatio;
+                    const causeStartY = 300 + (endY - 300) * causeStartRatio;
+                    const causeLineLength = 30; 
+                    
+                    const causeAngleRad = Math.atan2(endY - 300, endX - xBase);
+                    const causeLineAngle = causeAngleRad + (isTop ? Math.PI / 2 : -Math.PI / 2);
+
+                    const causeEndX = causeStartX - causeLineLength * Math.cos(causeLineAngle);
+                    const causeEndY = causeStartY - causeLineLength * Math.sin(causeLineAngle);
+
+                    causesHtml += `
+                        <g>
+                           <line class="cause-line" x1="${causeStartX}" y1="${causeStartY}" x2="${causeEndX}" y2="${causeEndY}"/>
+                           <text class="cause-text" x="${causeEndX - 8}" y="${causeEndY - 8}" text-anchor="end">${cause}</text>
+                        </g>`;
+                });
+                
+                const categoryBoxWidth = cat.name.length > 25 ? 260 : (cat.name.length > 20 ? 240 : 200);
+
+                const boneHtml = `
+                    <g>
+                        <line class="bone" x1="${xBase}" y1="300" x2="${endX}" y2="${endY}" />
+                        <rect class="category-box" x="${endX - (categoryBoxWidth / 2)}" y="${endY + (isTop ? -50 : 20)}" width="${categoryBoxWidth}" height="30" rx="8" />
+                        <text class="category-text" x="${endX}" y="${endY + (isTop ? -30 : 40)}">${cat.name}</text>
+                        ${causesHtml}
+                    </g>
+                `;
+                
+                if (isTop) bonesHtml += boneHtml;
+                else bonesHtml += boneHtml;
+            });
+            
+            const svgMarkup = `
+                <svg viewBox="0 0 1350 600" class="ishikawa-svg">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+                    <line class="spine" x1="100" y1="300" x2="1100" y2="300" />
+                     <g>
+                         <rect class="head-box" x="1100" y="270" width="200" height="60" rx="5" />
+                        <text class="head-text" x="1190" y="295">Adoção Lenta</text>
+                        <text class="head-text" x="1190" y="315">ou Ineficaz</text>
+                    </g>
+                    <path class="tail" d="M100,300 L50,250 L70,300 L50,350 Z" />
+                    ${bonesHtml}
+                </svg>
+            `;
+            container.innerHTML = svgMarkup;
+        }
+
+        function renderSwot() {
+            const container = document.getElementById('swot-container');
+            const colors = {
+                'Forças': 'bg-teal-50 border-teal-200',
+                'Fraquezas': 'bg-amber-50 border-amber-200',
+                'Oportunidades': 'bg-sky-50 border-sky-200',
+                'Ameaças': 'bg-rose-50 border-rose-200'
+            };
+            container.innerHTML = Object.keys(swotData).map(key => `
+                <div class="p-4 rounded-lg border ${colors[key]}">
+                    <h5 class="font-bold text-lg mb-2 text-slate-800">${key}</h5>
+                    <ul class="space-y-1 list-disc list-inside text-slate-600">
+                        ${swotData[key].map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function renderSwissCheese() {
+            const container = document.getElementById('swiss-cheese-container');
+            let slicesHtml = '';
+            const holePositions = [180, 150, 180, 210, 180, 160];
+            const sliceWidth = 40;
+            const sliceSpacing = 200; 
+
+            swissCheeseData.forEach((layer, index) => {
+                const xPos = 100 + index * sliceSpacing;
+                
+                const nameParts = layer.name.split(' ');
+                let textHtml = `<text class="layer-text" y="55" x="${xPos + sliceWidth / 2}">${nameParts[0]}</text>`;
+                if (nameParts.length > 1) {
+                    textHtml += `<text class="layer-text" y="75" x="${xPos + sliceWidth / 2}">${nameParts.slice(1).join(' ')}</text>`;
+                }
+                
+                slicesHtml += `
+                    <g>
+                        ${textHtml}
+                        <rect class="cheese-slice" x="${xPos}" y="90" width="${sliceWidth}" height="200" rx="8"></rect>
+                        <circle class="cheese-hole" cx="${xPos + sliceWidth / 2}" cy="${holePositions[index]}" r="25"></circle>
+                    </g>
+                `;
+            });
+
+            const svgWidth = 100 + swissCheeseData.length * sliceSpacing + 150;
+            const arrowEndX = svgWidth - 120;
+
+            const svg = `
+                <svg viewBox="0 0 ${svgWidth} 350" class="swiss-cheese-svg">
+                    <defs>
+                        <marker id="riskArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
+                        </marker>
+                    </defs>
+                    <text x="30" y="175" class="arrow-text">Perigo</text>
+                    <line class="arrow-line" x1="30" y1="180" x2="${arrowEndX}" y2="180"></line>
+                    ${slicesHtml}
+                    <text x="${arrowEndX + 20}" y="185" class="arrow-text">Acidente</text>
+                </svg>
+            `;
+            container.innerHTML = svg;
+        }
+        
+        function renderEAP() {
+            const container = document.getElementById('eap-container');
+            container.innerHTML = eapData.map(item => `
+                <div class="relative">
+                    <div class="absolute w-4 h-4 bg-blue-500 rounded-full -left-[33px] top-1 border-4 border-white"></div>
+                    <h5 class="font-bold text-slate-800">${item.phase}</h5>
+                    <ul class="mt-1 list-disc list-inside text-slate-600">
+                        ${item.items.map(subItem => `<li>${subItem}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+        
+        function renderRecommendations() {
+            const container = document.getElementById('recommendations-list');
+             container.innerHTML = recommendationsData.map(item => `
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">&#10003;</span>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+        }
+
+        // --- INTERACTIVITY ---
+        function applyFilters() {
+            let filteredData = [...riskData];
+
+            // Apply category filter
+            if (currentCategoryFilter !== 'all') {
+                filteredData = filteredData.filter(risk => risk.category === currentCategoryFilter);
+            }
+
+            // Apply level filter
+            if (currentLevelFilter !== 'all') {
+                filteredData = filteredData.filter(risk => getRiskLevel(risk.prob, risk.impact) === currentLevelFilter);
+            }
+            
+            // Update UI
+            renderRiskCards(filteredData);
+            if (riskMatrixChart) {
+                riskMatrixChart.data.datasets[0].data = mapDataForChart(filteredData);
+                riskMatrixChart.update();
+            }
+        }
+
+        function setupFilters() {
+            const categoryButtons = document.querySelectorAll('.category-filter-btn');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-slate-200', 'text-slate-700');
+                    });
+                    button.classList.add('bg-blue-500', 'text-white');
+                    button.classList.remove('bg-slate-200', 'text-slate-700');
+                    
+                    currentCategoryFilter = button.dataset.categoryFilter;
+                    applyFilters();
+                });
+            });
+
+            const levelButtons = document.querySelectorAll('.level-filter-btn');
+            levelButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    levelButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-slate-200', 'text-slate-700');
+                    });
+                    button.classList.add('bg-blue-500', 'text-white');
+                    button.classList.remove('bg-slate-200', 'text-slate-700');
+                    
+                    currentLevelFilter = button.dataset.levelFilter;
+                    applyFilters();
+                });
+            });
+        }
+        
+        function setupCardClicks() {
+            document.querySelectorAll('.risk-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const riskId = parseInt(e.currentTarget.dataset.riskId);
+                    showModalForRisk(riskId);
+                });
+            });
+        }
+        
+        function setupIshikawaTabs() {
+            // No tabs needed for the new visual diagram
+        }
+
+        // --- MODAL LOGIC ---
+        function setupModal() {
+            const modal = document.getElementById('riskModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            
+            closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        function showModalForRisk(riskId) {
+            const risk = riskData.find(r => r.id === riskId);
+            if (!risk) return;
+            
+            const modal = document.getElementById('riskModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            const probLabels = ['','Raro','Baixa','Média','Alta', 'Quase Certo'];
+            const impactLabels = ['','Sem Impacto','Leve','Médio','Grave', 'Gravíssimo'];
+
+            title.textContent = risk.name;
+            body.innerHTML = `
+                <p class="mb-4 text-slate-600">${risk.desc}</p>
+                <div class="grid grid-cols-1">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h6 class="font-semibold text-slate-800 mb-2">Análise Qualitativa</h6>
+                        <p><strong>Probabilidade:</strong> ${probLabels[risk.prob]}</p>
+                        <p><strong>Impacto:</strong> ${impactLabels[risk.impact]}</p>
+                        <p><strong>Nível de Risco:</strong> ${getRiskLevel(risk.prob, risk.impact)}</p>
+                        <p><strong>Categoria:</strong> ${risk.category}</p>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+    </script>
+
+</body>
+</html>
